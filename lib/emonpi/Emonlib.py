@@ -63,19 +63,23 @@ class EnergyMonitor:
         start=time.time()#Para que no se quede atorado en el loop
         #print "Detectando que la signal este cercana a cero"
         countZero=0 #Contador de veces que esta dentro del rango cero
+        self.startV=self.mcp.read_adc(self.channelV)
+        print "initial voltage = ", self.startV
         while st==False and voltSensor==True:
             self.startV=self.mcp.read_adc(self.channelV)
-            #print "self.startV = ", self.startV
-            #print "startV = ", self.startV
+            #print "startV 1= ", self.startV
             if self.startV<(self.ADC_COUNTS*0.55) and self.startV>(self.ADC_COUNTS*0.45):#Checa si esta en el rango (cercano al cero)
+            #if self.startV<(self.ADC_COUNTS*0.35) and self.startV>(self.ADC_COUNTS*0.25):#Checa si esta en el rango (cercano al cero)
+             #   print "self.startV inside = ", self.startV
                 countZero+=1
                 #print "Detectado"
-            if countZero==1:
+            if countZero==2:
              #   print "detectada"
                 st=True
             elapsedTime=time.time()-start
             if elapsedTime>timeout:
-                #print "elapsedTime timeout"
+                print "elapsedTime timeout"
+                voltSensor=False
                 #self.startV=0
                 st=True
             #time.sleep(.001)
@@ -157,15 +161,19 @@ class EnergyMonitor:
             self.realPower=V_RATIO*I_RATIO*self.sumP/nSamples
             self.apparentPower=self.Vrms*self.Irms
         #self.powerFactor=self.realPower/self.apparentPower
-
+            self.powerFactor=self.realPower/self.apparentPower
         print "Vrms = ", self.Vrms
+        print "Irms = ", self.Irms
+        print "realPower = ", self.realPower
+        print "apparentPower = ", self.apparentPower
+        print "powerFactor= ", self.powerFactor
 
 
         self.sumV=0
         self.sumI=0
         self.sumP=0
         self.filteredV=0
-        #self.offsetV=0
+        self.filteredI=0
 
 
 
