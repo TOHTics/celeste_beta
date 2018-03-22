@@ -51,6 +51,7 @@ class EnergyMonitor:
 
     #el numero de muestras esta definido por el numero de cruces (numero de medias ondas)
     def calcVI(self, crossings, timeout, voltSensor):
+        print "channel", self.channelV
         SupplyVoltage=3300#puede leer del adc
         crossCount=0
         numberOfSamples=0
@@ -79,6 +80,7 @@ class EnergyMonitor:
             elapsedTime=time.time()-start
             if elapsedTime>timeout:
                 print "elapsedTime timeout"
+                return False
                 voltSensor=False
                 #self.startV=0
                 st=True
@@ -174,11 +176,7 @@ class EnergyMonitor:
         self.sumP=0
         self.filteredV=0
         self.filteredI=0
-
-
-
-
-
+        return True
 
 #class MCP:#adc
 #    def __init__(self):
