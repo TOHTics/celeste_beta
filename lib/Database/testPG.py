@@ -15,15 +15,22 @@ fileName='./temp.txt'
 
 
 if __name__=="__main__":
-    celesteDb=imp.load_source('dataBase', '/home/pi/Documents/celeste_beta/lib/Database/celestePg.py')
-    myDatabase=celesteDb.CelesteDB("celestedb", "pi", "power_xml")
-    newVal='<testing from python script 8>'
-    results=myDatabase.getTopElement()
-    print results
-    myDatabase.deleteTopElement();
-    print "top element deleted"
-    results=myDatabase.getTopElement()
-    print results
-
+    print "iniciando..."
+    while True:
+        celesteDb=imp.load_source('dataBase', '/home/pi/Documents/celeste_beta/lib/Database/celestePg.py')
+        myDatabase=celesteDb.CelesteDB("celestedb", "pi", "power_xml")
+        newVal='<testing from python script 5>'
+        #myDatabase.insertXml(newVal)
+        results=myDatabase.getTopElement()
+        print "top element = "
+        print results
+        #myDatabase.deleteTopElement();
+        #print "top element deleted"
+        
+        results=myDatabase.getTopElement()
+        print "top element = "
+        print results
+        print "number of elements = ", myDatabase.getNElements()
+        time.sleep(1)
 
 

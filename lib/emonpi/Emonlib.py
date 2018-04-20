@@ -9,7 +9,7 @@ import math
 class EnergyMonitor:
 
     def __init__(self, mcp_):
-      print("iniciando...")
+      #print("iniciando...")
       self.ADC_COUNTS=1024
       self.offsetV=self.ADC_COUNTS>>1#512
       self.offsetI=self.ADC_COUNTS>>1
@@ -51,7 +51,7 @@ class EnergyMonitor:
 
     #el numero de muestras esta definido por el numero de cruces (numero de medias ondas)
     def calcVI(self, crossings, timeout, voltSensor):
-        print "channel", self.channelV
+        #print "channel", self.channelV
         SupplyVoltage=3300#puede leer del adc
         crossCount=0
         numberOfSamples=0
@@ -65,7 +65,7 @@ class EnergyMonitor:
         #print "Detectando que la signal este cercana a cero"
         countZero=0 #Contador de veces que esta dentro del rango cero
         self.startV=self.mcp.read_adc(self.channelV)
-        print "initial voltage = ", self.startV
+        #print "initial voltage = ", self.startV
         while st==False and voltSensor==True:
             self.startV=self.mcp.read_adc(self.channelV)
             #print "startV 1= ", self.startV
@@ -90,7 +90,7 @@ class EnergyMonitor:
         crossCount=0
         nSamples=0
         timeout2=timeout
-        print "primera lectura adc: ", self.startV
+        print " adc first reading: ", self.startV
         while crossCount<crossings and voltSensor==True: #Hasta ahora los calculos son erroneos puede ser por la frecuencia de muestreo
             if(time.time()-start)>=timeout2 and voltSensor==True:
                 #self.sumV=0
@@ -136,11 +136,11 @@ class EnergyMonitor:
             if self.lastVCross!=self.checkVCross:
                 crossCount+=1
             if crossCount==crossings:
-                print "maximo de cruces!"
+                print "crosses!"
                 #self.sumV=0
             #time.sleep(.001)
-        print "paso por el voltaje inicial ", crossCount
-        print "muestras", nSamples
+        #print "paso por el voltaje inicial ", crossCount
+        print "samples = ", nSamples
         #print "offsetV", self.offsetV
         #print "lastSample ", self.sampleV
         #print "filteredV ", self.filteredV

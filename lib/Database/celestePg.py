@@ -39,6 +39,17 @@ class CelesteDB:
         cur = conn.cursor()
         cur.execute("DELETE FROM "+self.tableName+" WHERE xml=any(array(SELECT xml FROM "+self.tableName+" LIMIT 1));")
         conn.commit()
-
         conn.close()
         cur.close()
+
+    def getNElements(self):
+        conn=psycopg2.connect(dbname=self.dbName, user=self.userDb)
+        cur = conn.cursor()
+        cur.execute("SELECT count(*) FROM "+self.tableName+";")
+        results=cur.fetchall()
+        conn.close()
+        cur.close()
+        return results[0][0]
+
+
+
