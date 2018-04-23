@@ -1,4 +1,6 @@
 import psycopg2
+import thread
+import time
 
 class CelesteDB:
     def __init__(self, dbName_, userDb_, tableName_):
@@ -50,6 +52,13 @@ class CelesteDB:
         conn.close()
         cur.close()
         return results[0][0]
+
+    def threadTest(self, threadName, delay):
+        count=0
+        while count<5:
+            time.sleep(delay)
+            count+=1
+            print "%s: %s"%(threadName, time.ctime(time.time()))
 
 
 

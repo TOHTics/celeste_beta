@@ -5,6 +5,7 @@ import subprocess
 import zlib
 import psycopg2
 import imp
+import thread
 
 
 #def (interface, host, n=2):
@@ -27,10 +28,19 @@ if __name__=="__main__":
         #myDatabase.deleteTopElement();
         #print "top element deleted"
         
-        results=myDatabase.getTopElement()
+        """results=myDatabase.getTopElement()
         print "top element = "
-        print results
+        print results"""
         print "number of elements = ", myDatabase.getNElements()
         time.sleep(1)
+        # Create two threads as follows
+        try:
+            thread.start_new_thread(myDatabase.threadTest, ("Thread-1", 2, ) )
+            thread.start_new_thread( myDatabase.threadTest, ("Thread-2", 4, ) )
+        except:
+            print "Error: unable to start thread"
+
+        while 1:
+            pass
 
 
