@@ -39,7 +39,7 @@ def dropsPPP0():
     print "out = ", out
 
 
-
+s
 
 if __name__=="__main__":
 
@@ -60,7 +60,8 @@ if __name__=="__main__":
             interface=2
         else:
             print "didn't work ppp0 either"
-            interface=0 #interface 0 means there are not internet connection
+            interface=0 #interface 0 means there are not internet connections
+
         dropsPPP0()
 
 

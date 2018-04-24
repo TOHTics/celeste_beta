@@ -18,7 +18,7 @@ class Package2Send:
 
     def sendPower(self, power_):
         self.payloadPost=self.createXml(power_)
-        print "enviar con post ", self.payloadPost
+        print "enviar con post ", self.payloadPot
         r = requests.post(self.urlPost, data=self.payloadPost, headers=self.headers)
         print 'Response content post:'
         print(r.content)

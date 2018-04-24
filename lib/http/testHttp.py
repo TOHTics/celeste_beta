@@ -18,7 +18,7 @@ if __name__=="__main__":
     #create new threads
     myThread=thread.myThread(1, "thread-1", myDatabase, "a0001")
 
-    #start new threads
+    #start new threadc
     myThread.start()
     while True:
         pass

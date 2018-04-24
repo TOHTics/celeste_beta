@@ -31,8 +31,9 @@ class myThread(threading.Thread):
             if self.myDb.getNElements()>0:#check the number of elements without send
                 print "elements in table = ", self.myDb.getNElements()
                 self.try2Send()
-                time.sleep(self.wakeUp)
+            time.sleep(self.wakeUp)
                 #try to send all of them
+
     def try2Send(self):
         triesCount=0
         while self.myDb.getNElements()>0:
@@ -61,9 +62,14 @@ class myThread(threading.Thread):
             if interface>0:
                 #sendData
                 self.myHttpCom.sendXml(topElement)
+                """
+                if the sending arrives well erase that element with:
+                self.myDb.deleteTopElement()
+                and set triesCount to 0
+                if does not arrive, it doesn't use and increment the counter:
+                triesCount+=1
+                """
                 print"sending data..."
-
-
             else:
                 triesCount+=1
 
