@@ -21,13 +21,25 @@ if __name__ == "__main__":
     Emon2=imp.load_source('EnergyMonitor', '/home/pi/Documents/celeste_beta/lib/emonpi/Emonlib.py')
     Emon3=imp.load_source('EnergyMonitor', '/home/pi/Documents/celeste_beta/lib/emonpi/Emonlib.py')
     Emon4=imp.load_source('EnergyMonitor', '/home/pi/Documents/celeste_beta/lib/emonpi/Emonlib.py')
-    httpCom=imp.load_source('httpPackage', '/home/pi/Documents/celeste_alpha/celeste/alpha/httpPackage.py')
-    #myHttpCom=httpCom.Package2Send(idDevice)
-
-    SPI_PORT=0
+    httpCom=imp.load_source('httpPackage', '/home/pi/Documents/celeste_beta/lib/http/httpPackage.py')
+    myHttpCom=httpCom.Package2Send(idDevice)
+    celesteDb=imp.load_source('dataBase', '/home/pi/Documents/celeste_beta/lib/Database/celestePg.py')
+    myDatabase=celesteDb.CelesteDB("celestedb", "pi", "power_xml")
     SPI_DEVICE=1
+    SPI_PORT=0
     myMcp=Adafruit_MCP3008.MCP3008(spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE))
     
+#******************thread to dequeue from the database and send to server
+    thread=imp.load_source('threadsManager', '/home/pi/Documents/celeste_beta/lib/http/sendThread.py')
+    #create new threads
+    myThread=thread.myThread(1, "thread-1", myDatabase, "a0001")
+    #start new threadc
+    myThread.start()
+
+
+#***********
+
+
     """CLK=3
     MISO=15
     MOSI=14
@@ -47,7 +59,7 @@ if __name__ == "__main__":
     print "voltSensor = ", voltSensor
     #GPIO.add_event_detect(21, GPIO.BOTH, callback=my_callback)#Se declara la interrupcion
 
-    emon1.setVoltage(0, 250, 1.6)#250
+    emon1.setVoltage(0, 245, 1.6)#250
     emon1.setCurrent(1, 150)
 
     """emon2.setVoltage(2, 250, 1.6)
@@ -59,27 +71,34 @@ if __name__ == "__main__":
     emon4.setVoltage(6, 250, 1.6)
     emon4.setCurrent(7, 90)"""
 
-    start_time=time.time()
     nSamples=0
     powSum=[]
+    emonVec=[]
     powSum.extend([None]*N_PHASES)
-    print "powSum = ", powSum
+    emonVec.extend([None]*N_PHASES)
+    emonVec[0]=emon1
+    powSum[0]=0.0#assigns type to the vector
 
+
+    tools.settleReadings(emonVec)
+    start_time=time.time()
     while True:
         if emon1.calcVI(200, 5, True)==False:#estable con 500 muestras
-            print "No se puede calcular la potencia en 1, no hay sensor de voltaje en esta fase"
+            print "There is not voltage sensor"
         nSamples+=1
         powSum[0]+=emon1.realPower
         print "\n"
         elapsed_time=time.time()-start_time
         if elapsed_time>=SECONDS_HOUR:
             print "elapsed time = ", elapsed_time
+            print "samples = ", nSamples
+            powSum[0]=powSum[0]/nSamples
+            tools.saveKw(powSum, myDatabase, myHttpCom)
+            powSum[0]=0
             nSamples=0
+            start_time=time.time()
 
 
         print "\n"
         time.sleep(.2)
-        tools.computeKw()
-
-
 

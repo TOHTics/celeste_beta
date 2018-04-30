@@ -90,7 +90,7 @@ class EnergyMonitor:
         crossCount=0
         nSamples=0
         timeout2=timeout
-        print " adc first reading: ", self.startV
+        #print " adc first reading: ", self.startV
         while crossCount<crossings and voltSensor==True: #Hasta ahora los calculos son erroneos puede ser por la frecuencia de muestreo
             if(time.time()-start)>=timeout2 and voltSensor==True:
                 #self.sumV=0
@@ -135,8 +135,8 @@ class EnergyMonitor:
                 self.lastVCross=self.checkVCross
             if self.lastVCross!=self.checkVCross:
                 crossCount+=1
-            if crossCount==crossings:
-                print "crosses!"
+            #if crossCount==crossings:
+                #print "crosses!"
                 #self.sumV=0
             #time.sleep(.001)
         #print "paso por el voltaje inicial ", crossCount
