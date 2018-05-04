@@ -10,7 +10,7 @@ def saveKw(kwH, myDatabase, httpCom):#
     #print "emonVec", emonVec.
 
 def settleReadings(emonVec):
-    numSamples=10
+    numSamples=20
     for i in range(numSamples):
         for emon in emonVec:#all the power phases
             emon.calcVI(50, 5, True)

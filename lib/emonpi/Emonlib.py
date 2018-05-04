@@ -140,7 +140,7 @@ class EnergyMonitor:
                 #self.sumV=0
             #time.sleep(.001)
         #print "paso por el voltaje inicial ", crossCount
-        print "samples = ", nSamples
+        #print "samples = ", nSamples
         #print "offsetV", self.offsetV
         #print "lastSample ", self.sampleV
         #print "filteredV ", self.filteredV

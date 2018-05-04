@@ -7,7 +7,7 @@ import os
 import sys
 import imp
 
-exitFlag = 0
+exitFlag = False
 
 class myThread(threading.Thread):
     def __init__(self, threadID, name, myDb_, idDevice_):
@@ -15,22 +15,22 @@ class myThread(threading.Thread):
         self.threadID=threadID
         self.name=name
         self.myDb=myDb_
-        self.wakeUp=10#every n secs check if is there available data in the table
-        self.maxTries=1
+        self.wakeUp=15#every n secs check if is there available data in the table
+        self.maxTries=3
         httpCom=imp.load_source('httpPackage', '/home/pi/Documents/celeste_beta/lib/http/httpPackage.py')
         self.myHttpCom=httpCom.Package2Send(idDevice_)
 
         #self.counter=counter
     
     def run(self):
-        print "starting "+self.name
-        results=self.myDb.getTopElement()
-        print "top element = "
-        print results
+        print "starting "+self.name+ " thread"
         while True:
             if self.myDb.getNElements()>0:#check the number of elements without send
                 print "elements in table = ", self.myDb.getNElements()
                 self.try2Send()
+            else:
+                print " empty table"
+            print "go to sleep"
             time.sleep(self.wakeUp)
                 #try to send all of them
 
@@ -38,10 +38,11 @@ class myThread(threading.Thread):
         triesCount=0
         while self.myDb.getNElements()>0:
             if triesCount>=self.maxTries:
+                print "sending fails, i'll try it later "
                 break
             topElement=self.myDb.getTopElement()#xml from the table
             topElement=topElement[0][0]
-            print "element retrieved = ", topElement
+            print " retrieved = ", topElement
             iterface=0
             #try first with eth0
             if ping("eth0", "google.com", 4)==True:
@@ -61,15 +62,24 @@ class myThread(threading.Thread):
                     interface=0
             if interface>0:
                 #sendData
-                self.myHttpCom.sendXml(topElement)
+                print"sending data..."
+                serverResponse=self.myHttpCom.sendXml(topElement)
+                print "server response = ", serverResponse
+                if serverResponse==200:#data arrives well to server
+                    print "the server received the data"
+                    self.myDb.deleteTopElement()
+                    triesCount=0
+                else:
+                    print "the data didn't arrive to server"
+                    triesCount+=1
+
                 """
-                if the sending arrives well erase that element with:
+                if the sending arrives well erases that element with:
                 self.myDb.deleteTopElement()
                 and set triesCount to 0
-                if does not arrive, it doesn't use and increment the counter:
+                if it does not arrive, it doesn't use the function and increment the counter:
                 triesCount+=1
                 """
-                print"sending data..."
             else:
                 triesCount+=1
 

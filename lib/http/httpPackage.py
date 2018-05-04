@@ -26,11 +26,12 @@ class Package2Send:
 
     def sendXml(self, powerXml):
         self.payloadPost=powerXml
-        print "enviar con post ", self.payloadPost
+        print "sending with post ", self.payloadPost
         r = requests.post(self.urlPost, data=self.payloadPost, headers=self.headers)
-        print 'Response content post:'
+        print 'Response post: '
         print(r.content)
-        print 'Status code: %d' % (r.status_code)
+        print 'Status code: ',  (r.status_code)
+        return r.status_code
 
     def getStatusRelay(self):
         payload='{\"DeviceId\": \"' + self.idDevice + '\"}'
