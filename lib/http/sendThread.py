@@ -10,13 +10,14 @@ import imp
 exitFlag = False
 
 class myThread(threading.Thread):
-    def __init__(self, threadID, name, myDb_, idDevice_):
+    def __init__(self, threadID, name, myDb_, idDevice_, simFlag_):
         threading.Thread.__init__(self)
         self.threadID=threadID
         self.name=name
         self.myDb=myDb_
         self.wakeUp=15#every n secs check if is there available data in the table
         self.maxTries=3
+        self.simFlag=simFlag_
         httpCom=imp.load_source('httpPackage', '/home/pi/Documents/celeste_beta/lib/http/httpPackage.py')
         self.myHttpCom=httpCom.Package2Send(idDevice_)
 
@@ -48,7 +49,8 @@ class myThread(threading.Thread):
             if ping("eth0", "google.com", 4)==True:
                 print "eth0 connection succed!"
                 interface=1
-            else:#couldn' launch eth0, tries with ppp0
+            elif self.simFlag==True:#couldn' launch eth0, tries with ppp0
+                print "The sim module is available"
                 if launchPPP0()==True:
                     print "succed launching ppp0"
                     if ping("ppp0", "google.com", 3)==True:
@@ -60,6 +62,9 @@ class myThread(threading.Thread):
                 else:
                     print "fail launching ppp0"
                     interface=0
+            else:
+                print "The sim module is not available"
+                interface=0
             if interface>0:
                 #sendData
                 print"sending data..."

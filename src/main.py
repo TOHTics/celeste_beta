@@ -8,6 +8,7 @@ import time
 import sys
 import datetime
 import tools
+import json
 GPIO.setmode(GPIO.BCM)  
 
 
@@ -31,9 +32,22 @@ if __name__ == "__main__":
     myMcp=Adafruit_MCP3008.MCP3008(spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE))
     
 #******************thread to dequeue from the database and send to server, the main thread is inserting elements to the db
+    with open('./services/configJson.txt') as json_file:
+        dataConfig=json.load(json_file)
+        print "json file: ", dataConfig['intSim']
+        json_file.close()
+    simFlag=False
+    if dataConfig['intSim']=='1':
+        simFlag=True
+        #print"The sim module is connected"
+    elif dataConfig['intSim']=='0': 
+        #print"The sim module is not connected"
+        simFlag=False
+
+
     thread=imp.load_source('threadsManager', '/home/pi/Documents/celeste_beta/lib/http/sendThread.py')
     #create new threads
-    myThread=thread.myThread(1, "thread-1", myDatabase, idDevice)
+    myThread=thread.myThread(1, "thread-1", myDatabase, idDevice, simFlag)
     #start new thread
     myThread.start()
 
