@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-python /home/pi/Documents/celeste_alpha/demos/inversionistas/wait_network.py > /home/pi/Documents/celeste_alpha/demos/inversionistas/outWaitUSB.log
-#sleep 10
+python /home/pi/Documents/celeste_beta/src/services/wait_network.py > /home/pi/Documents/celeste_beta/src/services/wait_network.log
+sleep 10
 #sudo ifconfig wwan0 down
 #sleep 1
 #sudo ifconfig wlan0 down
@@ -13,7 +13,7 @@ python /home/pi/Documents/celeste_alpha/demos/inversionistas/wait_network.py > /
 #sleep 1
 #python /home/pi/Documents/celeste_alpha/demos/inversionistas/main.py A001 > /home/pi/Documents/celeste_alpha/demos/inversionistas/out.log
 #sleep 20
-#supervisord #launch the monitoring tool supervisor which run the main measurement power process, check /etc/supervisord.conf
+supervisord #launch the monitoring tool supervisor which run the main measurement power process, check /etc/supervisord.conf
 
 #(
 #	while : ; do

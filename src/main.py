@@ -18,7 +18,7 @@ if __name__ == "__main__":
     relayPin=18
     idDevice=sys.argv[1]
     N_PHASES=1
-    SECONDS_HOUR=30#should be 3600, number of seconds in an hour to compute the kw/h
+    SECONDS_HOUR=40#should be 3600, number of seconds in an hour to compute the kw/h
     Emon=imp.load_source('EnergyMonitor', '/home/pi/Documents/celeste_beta/lib/emonpi/Emonlib.py')
     Emon2=imp.load_source('EnergyMonitor', '/home/pi/Documents/celeste_beta/lib/emonpi/Emonlib.py')
     Emon3=imp.load_source('EnergyMonitor', '/home/pi/Documents/celeste_beta/lib/emonpi/Emonlib.py')
@@ -104,6 +104,7 @@ if __name__ == "__main__":
         powSum[0]+=emon1.realPower
         print "\n"
         elapsed_time=time.time()-start_time
+        #print "elapsed Time: ", elapsed_time
         if elapsed_time>=SECONDS_HOUR:
             print "elapsed time = ", elapsed_time
             print "samples = ", nSamples

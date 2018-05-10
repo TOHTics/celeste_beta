@@ -46,12 +46,12 @@ if flag4G==True:
     try:
         thread.start_new_thread(launchWvdial, ("Thread wvdial", ) )
     except:
-        print "Error: unable to start thread"
+        print "Error: unable to start wvdial thread"
 
     #output=subprocess.call(commandWvdial, stdout=fnull)
     #process = subprocess.Popen(commandWvdia, stdout=subprocess.PIPE, stdin=subprocess.PIPE, shell=True)
     #stdout, stderr = process.communicate()
-    print "after subprocess!!!!!!!\n\n"
+    #print "after subprocess!!!!!!!\n\n"
     time.sleep(5)
     iniConfig={'intSim':"1"}
 
