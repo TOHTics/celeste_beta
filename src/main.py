@@ -47,9 +47,11 @@ if __name__ == "__main__":
 
     thread=imp.load_source('threadsManager', '/home/pi/Documents/celeste_beta/lib/http/sendThread.py')
     #create new threads
+    """
     myThread=thread.myThread(1, "thread-1", myDatabase, idDevice, simFlag)
     #start new thread
     myThread.start()
+    """
 
 #***********
 
@@ -73,8 +75,8 @@ if __name__ == "__main__":
     print "voltSensor = ", voltSensor
     #GPIO.add_event_detect(21, GPIO.BOTH, callback=my_callback)#Se declara la interrupcion
 
-    emon1.setVoltage(0, 278, 1.6)#250
-    emon1.setCurrent(1, 150)
+    emon1.setVoltage(0, 259, 1.6)#250
+    emon1.setCurrent(1, 196)
 
     """emon2.setVoltage(2, 250, 1.6)
     emon2.setCurrent(3, 90)
@@ -109,7 +111,7 @@ if __name__ == "__main__":
             print "elapsed time = ", elapsed_time
             print "samples = ", nSamples
             powSum[0]=powSum[0]/nSamples
-            tools.saveKw(powSum, myDatabase, myHttpCom)
+            #tools.saveKw(powSum, myDatabase, myHttpCom)
             powSum[0]=0
             nSamples=0
             start_time=time.time()
