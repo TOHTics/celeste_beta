@@ -15,10 +15,11 @@ class myThread(threading.Thread):
         self.threadID=threadID
         self.name=name
         self.myDb=myDb_
-        self.wakeUp=15#every n secs check if is there available data in the table
+        self.wakeUp=10#every n secs check if is there available data in the table
         self.maxTries=3
         self.simFlag=simFlag_
         httpCom=imp.load_source('httpPackage', '/home/pi/Documents/celeste_beta/lib/http/httpPackage.py')
+        #print "starting thread with idDevice: ", idDevice_
         self.myHttpCom=httpCom.Package2Send(idDevice_)
 
         #self.counter=counter
@@ -49,21 +50,23 @@ class myThread(threading.Thread):
             if ping("eth0", "google.com", 4)==True:
                 print "eth0 connection succed!"
                 interface=1
-            elif self.simFlag==True:#couldn' launch eth0, tries with ppp0
+            elif self.simFlag==True:#couldn' use eth0, tries with ppp0
                 print "The sim module is available"
-                if launchPPP0()==True:
+                if launchPPP0()==True:#could be a bug here
                     print "succed launching ppp0"
                     if ping("ppp0", "google.com", 3)==True:
-                        print "ppp0 nternet connection succed!"
+                        print "ppp0 internet connection succed!"
                         interface=2
                     else:
                         interface=0
                     dropPPP0()
                 else:
+                    dropPPP0()#eitherway
                     print "fail launching ppp0"
                     interface=0
             else:
-                print "The sim module is not available"
+                print "\n"
+                print "The sim module and eth0 are not available "
                 interface=0
             if interface>0:
                 #sendData
@@ -109,12 +112,14 @@ def launchPPP0():
     fout2=open('pppOut2.txt', 'w')
     command = ['sudo', 'ifconfig','ppp0', 'up']
     out=subprocess.call(command, stdout=fout)#rise the ppp0 interface
+    print "ppp0 up output: ", out
     if out!=0:
         return False
     command=['sudo', 'route', 'add', 'default', 'dev', 'ppp0']
     time.sleep(.5)
     out=subprocess.call(command, stdout=fout2)#set ppp0 as first option in the interfaces
-    if out==1:
+    print "route add output: ", out
+    if out==0:
         return True
     else:
         return False

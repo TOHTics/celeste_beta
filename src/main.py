@@ -18,7 +18,7 @@ if __name__ == "__main__":
     relayPin=18
     idDevice=sys.argv[1]
     N_PHASES=1
-    SECONDS_HOUR=40#should be 3600, number of seconds in an hour to compute the kw/h
+    SECONDS_HOUR=10#should be 3600, number of seconds in an hour to compute the kw/h
     Emon=imp.load_source('EnergyMonitor', '/home/pi/Documents/celeste_beta/lib/emonpi/Emonlib.py')
     Emon2=imp.load_source('EnergyMonitor', '/home/pi/Documents/celeste_beta/lib/emonpi/Emonlib.py')
     Emon3=imp.load_source('EnergyMonitor', '/home/pi/Documents/celeste_beta/lib/emonpi/Emonlib.py')
@@ -27,9 +27,22 @@ if __name__ == "__main__":
     myHttpCom=httpCom.Package2Send(idDevice)
     celesteDb=imp.load_source('dataBase', '/home/pi/Documents/celeste_beta/lib/Database/celestePg.py')
     myDatabase=celesteDb.CelesteDB("celestedb", "pi", "power_xml")
+    """
     SPI_DEVICE=1
     SPI_PORT=0
     myMcp=Adafruit_MCP3008.MCP3008(spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE))
+    """
+    """CLK=3
+    MISO=15
+    MOSI=14
+    CS=2
+    myMcp=Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso = MISO, mosi=MOSI)"""
+    CLK=3
+    MISO=15
+    MOSI=14
+    CS=2
+    myMcp=Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
+    
     
 #******************thread to dequeue from the database and send to server, the main thread is inserting elements to the db
     with open('./services/configJson.txt') as json_file:
@@ -47,20 +60,13 @@ if __name__ == "__main__":
 
     thread=imp.load_source('threadsManager', '/home/pi/Documents/celeste_beta/lib/http/sendThread.py')
     #create new threads
-    """
     myThread=thread.myThread(1, "thread-1", myDatabase, idDevice, simFlag)
     #start new thread
     myThread.start()
-    """
 
 #***********
 
 
-    """CLK=3
-    MISO=15
-    MOSI=14
-    CS=2
-    myMcp=Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso = MISO, mosi=MOSI)"""
 
     #CFE
     emon1=Emon.EnergyMonitor(myMcp)#phase 1

@@ -55,7 +55,7 @@ class Package2Send:
         <SunSpecData v="1.0">
         <d id=\"'''+self.idDevice+'''\" t=\"''' + currentTime +  '''\">
         <m id="potenciometro" x="0">
-        <p id="consumo" t=\"''' + currentTime + '''\">''' + str(currentPower) + '''</p>
+        <p id="CONSUMO" t=\"''' + currentTime + '''\">''' + str(currentPower) + '''</p>
         </m>
         </d>
         </SunSpecData>
