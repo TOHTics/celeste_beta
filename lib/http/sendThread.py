@@ -15,7 +15,7 @@ class myThread(threading.Thread):
         self.threadID=threadID
         self.name=name
         self.myDb=myDb_
-        self.wakeUp=10#every n secs check if is there available data in the table
+        self.wakeUp=4#every n secs check if is there available data in the table
         self.maxTries=3
         self.simFlag=simFlag_
         httpCom=imp.load_source('httpPackage', '/home/pi/Documents/celeste_beta/lib/http/httpPackage.py')

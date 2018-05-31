@@ -27,21 +27,16 @@ if __name__ == "__main__":
     myHttpCom=httpCom.Package2Send(idDevice)
     celesteDb=imp.load_source('dataBase', '/home/pi/Documents/celeste_beta/lib/Database/celestePg.py')
     myDatabase=celesteDb.CelesteDB("celestedb", "pi", "power_xml")
-    """
+
     SPI_DEVICE=1
     SPI_PORT=0
     myMcp=Adafruit_MCP3008.MCP3008(spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE))
-    """
+
     """CLK=3
     MISO=15
     MOSI=14
     CS=2
     myMcp=Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso = MISO, mosi=MOSI)"""
-    CLK=3
-    MISO=15
-    MOSI=14
-    CS=2
-    myMcp=Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
     
     
 #******************thread to dequeue from the database and send to server, the main thread is inserting elements to the db
@@ -106,7 +101,7 @@ if __name__ == "__main__":
     tools.settleReadings(emonVec)
     start_time=time.time()
     while True:
-        if emon1.calcVI(200, 5, True)==False:#estable con 500 muestras
+        if emon1.calcVI(250, 10, True)==False:#estable con 500 muestras
             print "There is not voltage sensor"
         nSamples+=1
         powSum[0]+=emon1.realPower
@@ -123,5 +118,5 @@ if __name__ == "__main__":
             start_time=time.time()
 
         print "\n"
-        time.sleep(.5)
+        time.sleep(.6)
 

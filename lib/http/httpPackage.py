@@ -10,7 +10,7 @@ class Package2Send:
         #self.urlGet='http://'+urlNg+'.ngrok.io/celeste/device/status/arduino'
         self.urlGet='http://work.tohtics.com:9001/celeste/device/status/arduino'
         self.idDevice=idDevice_
-        self.headers={'Content-Type': 'application/xml'}
+        self.headers={'Content-Type': 'application/xml', 'Authorization': 'Basic Y2FybG9zOkFwb2xsbzExSG91c3Rvbg==', 'CONNECTION':'close'}
         self.payloadPost=""
         self.payloadGet='{\"DeviceId\": \"' + self.idDevice + '\"}'
         self.xml=""
@@ -18,7 +18,7 @@ class Package2Send:
 
     def sendPower(self, power_):
         self.payloadPost=self.createXml(power_)
-        print "enviar con post ", self.payloadPot
+        print "enviar con post ", self.payloadPost
         r = requests.post(self.urlPost, data=self.payloadPost, headers=self.headers)
         print 'Response content post:'
         print(r.content)
@@ -26,6 +26,7 @@ class Package2Send:
 
     def sendXml(self, powerXml):
         self.payloadPost=powerXml
+        #self.payloadPost='''<test>'''
         print "sending with post ", self.payloadPost
         r = requests.post(self.urlPost, data=self.payloadPost, headers=self.headers)
         print 'Response post: '
