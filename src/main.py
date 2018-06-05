@@ -18,7 +18,7 @@ if __name__ == "__main__":
     relayPin=18
     idDevice=sys.argv[1]
     N_PHASES=1
-    SECONDS_HOUR=10#should be 3600, number of seconds in an hour to compute the kw/h
+    SECONDS_HOUR=300#should be 3600, number of seconds in an hour to compute the kw/h
     Emon=imp.load_source('EnergyMonitor', '/home/pi/Documents/celeste_beta/lib/emonpi/Emonlib.py')
     Emon2=imp.load_source('EnergyMonitor', '/home/pi/Documents/celeste_beta/lib/emonpi/Emonlib.py')
     Emon3=imp.load_source('EnergyMonitor', '/home/pi/Documents/celeste_beta/lib/emonpi/Emonlib.py')
@@ -57,7 +57,7 @@ if __name__ == "__main__":
     #create new threads
     myThread=thread.myThread(1, "thread-1", myDatabase, idDevice, simFlag)
     #start new thread
-    myThread.start()
+    #myThread.start()
 
 #***********
 
@@ -76,12 +76,12 @@ if __name__ == "__main__":
     print "voltSensor = ", voltSensor
     #GPIO.add_event_detect(21, GPIO.BOTH, callback=my_callback)#Se declara la interrupcion
 
-    emon1.setVoltage(0, 259, 1.6)#250
-    emon1.setCurrent(1, 196)
+    emon1.setVoltage(0, 256, 1.6)#250
+    emon1.setCurrent(1, 185)
 
-    """emon2.setVoltage(2, 250, 1.6)
-    emon2.setCurrent(3, 90)
-
+    emon2.setVoltage(2, 256, 1.6)
+    emon2.setCurrent(3, 96)
+    """
     emon3.setVoltage(4, 250, 1.6)
     emon3.setCurrent(5, 90)
 
@@ -94,17 +94,27 @@ if __name__ == "__main__":
     powSum.extend([None]*N_PHASES)
     emonVec.extend([None]*N_PHASES)
     emonVec[0]=emon1
+    #emonVec[1]=emon2
     powSum[0]=0.0#assigns type to the vector
+    sumRealPow=0.
 
 
     print "settling readings..."
     tools.settleReadings(emonVec)
     start_time=time.time()
     while True:
-        if emon1.calcVI(250, 10, True)==False:#estable con 500 muestras
-            print "There is not voltage sensor"
+        for currentEmon in emonVec:
+            print "emon "
+
+            if currentEmon.calcVI(450, 10, True)==False:#estable con 500 muestras
+                print "There is not voltage sensor"
+            time.sleep(.1)
+            sumRealPow+=currentEmon.realPower
+
+        print "real power sum = ", sumRealPow
+        powSum[0]+=sumRealPow
+        sumRealPow=0.
         nSamples+=1
-        powSum[0]+=emon1.realPower
         print "\n"
         elapsed_time=time.time()-start_time
         #print "elapsed Time: ", elapsed_time

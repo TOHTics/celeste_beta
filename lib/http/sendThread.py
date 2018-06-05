@@ -15,8 +15,8 @@ class myThread(threading.Thread):
         self.threadID=threadID
         self.name=name
         self.myDb=myDb_
-        self.wakeUp=4#every n secs check if is there available data in the table
-        self.maxTries=3
+        self.wakeUp=15#every n secs check if is there available data in the table
+        self.maxTries=5
         self.simFlag=simFlag_
         httpCom=imp.load_source('httpPackage', '/home/pi/Documents/celeste_beta/lib/http/httpPackage.py')
         #print "starting thread with idDevice: ", idDevice_
@@ -26,6 +26,7 @@ class myThread(threading.Thread):
     
     def run(self):
         print "starting "+self.name+ " thread"
+        #time.sleep(self.wakeUp)#uncomment for not send inmediately
         while True:
             if self.myDb.getNElements()>0:#check the number of elements without send
                 print "elements in table = ", self.myDb.getNElements()
@@ -40,14 +41,14 @@ class myThread(threading.Thread):
         triesCount=0
         while self.myDb.getNElements()>0:
             if triesCount>=self.maxTries:
-                print "sending fails, i'll try it later "
+                print "the submission failed several times, i'll try it later "
                 break
             topElement=self.myDb.getTopElement()#xml from the table
             topElement=topElement[0][0]
             print " retrieved = ", topElement
             iterface=0
             #try first with eth0
-            if ping("eth0", "google.com", 4)==True:
+            if ping("eth0", "google.com", 3)==True:
                 print "eth0 connection succed!"
                 interface=1
             elif self.simFlag==True:#couldn' use eth0, tries with ppp0
@@ -64,10 +65,12 @@ class myThread(threading.Thread):
                     dropPPP0()#eitherway
                     print "fail launching ppp0"
                     interface=0
+                resetEth0()#the driver could fail
             else:
                 print "\n"
                 print "The sim module and eth0 are not available "
                 interface=0
+                resetEth0()#the driver could fail
             if interface>0:
                 #sendData
                 print"sending data..."
@@ -93,11 +96,12 @@ class myThread(threading.Thread):
 
 def ping(interface, host, n=2):
     assert(n>2)
+    print "trying ping with: ", interface
     fnull=open(os.devnull, 'w')
     fout=open('outputFile.txt', "w")
     stable=True
     for i in range(n):
-        command = ['ping','-I', interface, '-c1', host]
+        command = ['ping','-I', interface, '-c1', host, '-W4']
                                         #command = ["ls", "-l"]
         output=subprocess.call(command, stdout=fout)
        #sys.stdout=
@@ -128,6 +132,14 @@ def dropPPP0():
     fout=open('dropsPPPOut.txt', 'w')
     command = ['sudo', 'ifconfig','ppp0', 'down']
     out=subprocess.call(command, stdout=fout)#rise the ppp0 interface
+
+def resetEth0():#The ethernet driver (encj.. chip) has some problems
+    fout=open(os.devnull, 'w')
+    commandDown = ['sudo', 'ifconfig','eth0', 'down']
+    out=subprocess.call(commandDown, stdout=fout)#rise the ppp0 interface
+    time.sleep(.5)
+    commandUp = ['sudo', 'ifconfig','eth0', 'up']
+    out=subprocess.call(commandUp, stdout=fout)#rise the ppp0 interface
 
 
     """

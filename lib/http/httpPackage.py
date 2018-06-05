@@ -28,7 +28,12 @@ class Package2Send:
         self.payloadPost=powerXml
         #self.payloadPost='''<test>'''
         print "sending with post ", self.payloadPost
-        r = requests.post(self.urlPost, data=self.payloadPost, headers=self.headers)
+        try:
+            r = requests.post(self.urlPost, data=self.payloadPost, headers=self.headers)
+        except requests.exceptions.RequestException as e:
+            print "error with post, the exception is: "
+            print e
+            return 666
         print 'Response post: '
         print(r.content)
         print 'Status code: ',  (r.status_code)
