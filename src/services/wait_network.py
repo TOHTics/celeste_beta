@@ -8,14 +8,16 @@ import subprocess
 import json
 import thread
 
-
+localPath='/home/pi/Documents/celeste_beta/src/services/'
+#def launchWvdial(threadName):
 def launchWvdial(threadName):
     commandWvdial = ['sudo','wvdial', '&']
     fnull=open(os.devnull, 'w')
     print "ppp0 goes up"
-    output=subprocess.call(commandWvdial, stdout=fnull)
-    time.sleep(10)
-    fnull=open(os.devnull, 'w')
+    #output=subprocess.call(commandWvdial, stdout=fnull)
+    proc=subprocess.Popen(['sudo','wvdial', '&'],close_fds=True, stdout=fnull )
+    print "exit from subprocess popen"
+    #time.sleep(7)
 
 print ('Trying to open port')
 port = None
@@ -49,10 +51,13 @@ if flag4G==True:
     comIfcDown=['sudo','ifconfig', 'wwan0', 'down']
     output=subprocess.call(comIfcDown, stdout=fnull)
     time.sleep(.5)
+    launchWvdial("launching wvdial")
+    """
     try:
         thread.start_new_thread(launchWvdial, ("Thread wvdial", ) )
     except:
         print "Error: unable to start wvdial thread"
+    """
 
     #output=subprocess.call(commandWvdial, stdout=fnull)
     #process = subprocess.Popen(commandWvdia, stdout=subprocess.PIPE, stdin=subprocess.PIPE, shell=True)
@@ -90,7 +95,7 @@ if flag4G==True:
             break
 
         elapsed_time=time.time()-start_time
-        if elapsed_time>=8:#
+        if elapsed_time>=10:#
             print "timeout! there is not ppp0 interface"#maybe the antenna is disconnected
             print "killing wvdial"
             comIfcDown=['sudo','killall', 'wvdial']#necessary to the principal firmware takes control over the network intefaces
@@ -99,19 +104,20 @@ if flag4G==True:
             iniConfig={'intSim':"0"}
             break
 
-with open('configJson.txt', 'w') as outfile:
+with open(localPath+'configJson.txt', 'w') as outfile:
     json.dump(iniConfig, outfile)
     outfile.close()
 time.sleep(4)
 
-with open('configJson.txt') as json_file:
+with open(localPath+'configJson.txt') as json_file:
     dataConfig=json.load(json_file)
     print "json file: ", dataConfig['intSim']
     json_file.close()
 
     if flag4G==True:
         while True:
-            print "sleeping..."
+            print "bye..."
+            break
             time.sleep(90000)#it's necessary for the wvdial subprocess  thread
 
 

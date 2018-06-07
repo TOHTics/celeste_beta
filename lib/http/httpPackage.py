@@ -29,7 +29,7 @@ class Package2Send:
         #self.payloadPost='''<test>'''
         print "sending with post ", self.payloadPost
         try:
-            r = requests.post(self.urlPost, data=self.payloadPost, headers=self.headers)
+            r = requests.post(self.urlPost, data=self.payloadPost, headers=self.headers, timeout=40)
         except requests.exceptions.RequestException as e:
             print "error with post, the exception is: "
             print e

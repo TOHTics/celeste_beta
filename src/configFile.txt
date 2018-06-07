@@ -1,0 +1,7 @@
+{
+ "id_device":"TEST",
+ "phases":1,
+ "time_kw":30,
+ "wake_up":30,
+ "max_tries":3
+}

@@ -11,14 +11,19 @@ import tools
 import json
 GPIO.setmode(GPIO.BCM)  
 
-
+projectPath='/home/pi/Documents/celeste_beta/'
 if __name__ == "__main__":
     
     print "starting..."
     relayPin=18
-    idDevice=sys.argv[1]
-    N_PHASES=1
-    SECONDS_HOUR=300#should be 3600, number of seconds in an hour to compute the kw/h
+    #idDevice=sys.argv[1]
+    
+    with open('configFile.txt') as configFile:
+        jsonConfig=json.load(configFile)
+        configFile.close()
+    idDevice=jsonConfig['id_device']
+    N_PHASES=jsonConfig['phases']
+    SECONDS_HOUR=jsonConfig['time_kw']#should be 3600, number of seconds in an hour to compute the kw/h, 300 for 5m
     Emon=imp.load_source('EnergyMonitor', '/home/pi/Documents/celeste_beta/lib/emonpi/Emonlib.py')
     Emon2=imp.load_source('EnergyMonitor', '/home/pi/Documents/celeste_beta/lib/emonpi/Emonlib.py')
     Emon3=imp.load_source('EnergyMonitor', '/home/pi/Documents/celeste_beta/lib/emonpi/Emonlib.py')
@@ -40,7 +45,7 @@ if __name__ == "__main__":
     
     
 #******************thread to dequeue from the database and send to server, the main thread is inserting elements to the db
-    with open('./services/configJson.txt') as json_file:
+    with open(projectPath+'src/services/configJson.txt') as json_file:
         dataConfig=json.load(json_file)
         print "json file: ", dataConfig['intSim']
         json_file.close()
@@ -53,15 +58,13 @@ if __name__ == "__main__":
         simFlag=False
 
 
-    thread=imp.load_source('threadsManager', '/home/pi/Documents/celeste_beta/lib/http/sendThread.py')
+    thread=imp.load_source('threadsManager', projectPath+'lib/http/sendThread.py')
     #create new threads
-    myThread=thread.myThread(1, "thread-1", myDatabase, idDevice, simFlag)
+    myThread=thread.myThread(1, "thread-1", myDatabase, idDevice, simFlag, jsonConfig)
     #start new thread
-    #myThread.start()
+    myThread.start()
 
 #***********
-
-
 
     #CFE
     emon1=Emon.EnergyMonitor(myMcp)#phase 1
@@ -71,10 +74,12 @@ if __name__ == "__main__":
     emon3=Emon3.EnergyMonitor(myMcp)#phase 1
     emon4=Emon4.EnergyMonitor(myMcp)#phase 2
 
+    """
     GPIO.setup(21, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) #Se activa la pulldown interna    
     voltSensor= GPIO.input(21)
-    print "voltSensor = ", voltSensor
-    #GPIO.add_event_detect(21, GPIO.BOTH, callback=my_callback)#Se declara la interrupcion
+    print "voasasltSensor = ", voltSensor
+    #GPIOasas(21, GPIO.BOTH, callback=my_callback)#Se declara la interrupcion
+    """
 
     emon1.setVoltage(0, 256, 1.6)#250
     emon1.setCurrent(1, 185)
@@ -89,6 +94,7 @@ if __name__ == "__main__":
     emon4.setCurrent(7, 90)"""
 
     nSamples=0
+    countEmons=0
     powSum=[]
     emonVec=[]
     powSum.extend([None]*N_PHASES)
@@ -97,21 +103,20 @@ if __name__ == "__main__":
     #emonVec[1]=emon2
     powSum[0]=0.0#assigns type to the vector
     sumRealPow=0.
-
-
     print "settling readings..."
     tools.settleReadings(emonVec)
     start_time=time.time()
     while True:
+        countEmons=0
         for currentEmon in emonVec:
-            print "emon "
-
-            if currentEmon.calcVI(450, 10, True)==False:#estable con 500 muestras
+            print "emon %d"% (countEmons)
+            if currentEmon.calcVI(420, 10, True)==False:#estable con 500 muestras
                 print "There is not voltage sensor"
-            time.sleep(.1)
+            time.sleep(.05)
             sumRealPow+=currentEmon.realPower
+            countEmons+=1
 
-        print "real power sum = ", sumRealPow
+        #print "real power sum = ", sumRealPow
         powSum[0]+=sumRealPow
         sumRealPow=0.
         nSamples+=1
@@ -122,11 +127,12 @@ if __name__ == "__main__":
             print "elapsed time = ", elapsed_time
             print "samples = ", nSamples
             powSum[0]=powSum[0]/nSamples
+            print "i'm going to save: ", powSum[0], "watts"
             #tools.saveKw(powSum, myDatabase, myHttpCom)
             powSum[0]=0
             nSamples=0
             start_time=time.time()
 
         print "\n"
-        time.sleep(.6)
+        time.sleep(.5)
 

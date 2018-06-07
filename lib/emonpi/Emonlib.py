@@ -164,11 +164,13 @@ class EnergyMonitor:
             self.apparentPower=self.Vrms*self.Irms
         #self.powerFactor=self.realPower/self.apparentPower
             self.powerFactor=self.realPower/self.apparentPower
+        """    
         print "Vrms = ", self.Vrms
         print "Irms = ", self.Irms
         print "realPower = ", self.realPower
         print "apparentPower = ", self.apparentPower
         print "powerFactor= ", self.powerFactor
+        """    
 
 
         self.sumV=0

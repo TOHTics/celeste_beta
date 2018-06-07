@@ -10,13 +10,13 @@ import imp
 exitFlag = False
 
 class myThread(threading.Thread):
-    def __init__(self, threadID, name, myDb_, idDevice_, simFlag_):
+    def __init__(self, threadID, name, myDb_, idDevice_, simFlag_, jsonConfig):
         threading.Thread.__init__(self)
         self.threadID=threadID
         self.name=name
         self.myDb=myDb_
-        self.wakeUp=15#every n secs check if is there available data in the table
-        self.maxTries=5
+        self.wakeUp=jsonConfig['wake_up']#every n secs check if is there available data in the table
+        self.maxTries=jsonConfig['max_tries']
         self.simFlag=simFlag_
         httpCom=imp.load_source('httpPackage', '/home/pi/Documents/celeste_beta/lib/http/httpPackage.py')
         #print "starting thread with idDevice: ", idDevice_
@@ -33,7 +33,7 @@ class myThread(threading.Thread):
                 self.try2Send()
             else:
                 print " empty table"
-            print "go to sleep"
+            print "go to sleep: %d"%(self.wakeUp)
             time.sleep(self.wakeUp)
                 #try to send all of them
 
@@ -65,12 +65,12 @@ class myThread(threading.Thread):
                     dropPPP0()#eitherway
                     print "fail launching ppp0"
                     interface=0
-                resetEth0()#the driver could fail
+                #resetEth0()#the driver could fail
             else:
                 print "\n"
                 print "The sim module and eth0 are not available "
                 interface=0
-                resetEth0()#the driver could fail
+                #resetEth0()#the driver could fail
             if interface>0:
                 #sendData
                 print"sending data..."
@@ -93,6 +93,8 @@ class myThread(threading.Thread):
                 """
             else:
                 triesCount+=1
+            print "triesCount: %d"%(triesCount)
+            time.sleep(.01)
 
 def ping(interface, host, n=2):
     assert(n>2)
@@ -101,7 +103,7 @@ def ping(interface, host, n=2):
     fout=open('outputFile.txt', "w")
     stable=True
     for i in range(n):
-        command = ['ping','-I', interface, '-c1', host, '-W4']
+        command = ['ping','-I', interface, '-c1', host, '-W8']
                                         #command = ["ls", "-l"]
         output=subprocess.call(command, stdout=fout)
        #sys.stdout=
@@ -120,7 +122,7 @@ def launchPPP0():
     if out!=0:
         return False
     command=['sudo', 'route', 'add', 'default', 'dev', 'ppp0']
-    time.sleep(.5)
+    time.sleep(.4)
     out=subprocess.call(command, stdout=fout2)#set ppp0 as first option in the interfaces
     print "route add output: ", out
     if out==0:

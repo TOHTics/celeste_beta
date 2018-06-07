@@ -2,7 +2,7 @@
 set -e
 
 python /home/pi/Documents/celeste_beta/src/services/wait_network.py > /home/pi/Documents/celeste_beta/src/services/wait_network.log
-sleep 10
+sleep 60
 #sudo ifconfig wwan0 down
 #sleep 1
 #sudo ifconfig wlan0 down
