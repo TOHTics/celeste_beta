@@ -14,7 +14,7 @@ GPIO.setmode(GPIO.BCM)
 projectPath='/home/pi/Documents/celeste_beta/'
 if __name__ == "__main__":
     
-    print "starting..."
+    print "starting at "+datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     relayPin=18
     #idDevice=sys.argv[1]
     
@@ -84,9 +84,10 @@ if __name__ == "__main__":
     emon1.setVoltage(0, 256, 1.6)#250
     emon1.setCurrent(1, 185)
 
+
+    """
     emon2.setVoltage(2, 256, 1.6)
     emon2.setCurrent(3, 96)
-    """
     emon3.setVoltage(4, 250, 1.6)
     emon3.setCurrent(5, 90)
 
@@ -101,6 +102,7 @@ if __name__ == "__main__":
     emonVec.extend([None]*N_PHASES)
     emonVec[0]=emon1
     #emonVec[1]=emon2
+    #emonVec[1]=emon2
     powSum[0]=0.0#assigns type to the vector
     sumRealPow=0.
     print "settling readings..."
@@ -110,7 +112,7 @@ if __name__ == "__main__":
         countEmons=0
         for currentEmon in emonVec:
             print "emon %d"% (countEmons)
-            if currentEmon.calcVI(420, 10, True)==False:#estable con 500 muestras
+            if currentEmon.calcVI(400, 10, True)==False:#estable con 500 muestras
                 print "There is not voltage sensor"
             time.sleep(.05)
             sumRealPow+=currentEmon.realPower
@@ -128,11 +130,11 @@ if __name__ == "__main__":
             print "samples = ", nSamples
             powSum[0]=powSum[0]/nSamples
             print "i'm going to save: ", powSum[0], "watts"
-            #tools.saveKw(powSum, myDatabase, myHttpCom)
+            tools.saveKw(powSum, myDatabase, myHttpCom)
             powSum[0]=0
             nSamples=0
             start_time=time.time()
 
         print "\n"
-        time.sleep(.5)
+        time.sleep(1.5)
 
