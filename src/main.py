@@ -136,5 +136,5 @@ if __name__ == "__main__":
             start_time=time.time()
 
         print "\n"
-        time.sleep(5)
+        time.sleep(.4)
 
